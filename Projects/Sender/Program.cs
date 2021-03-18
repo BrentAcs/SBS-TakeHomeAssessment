@@ -25,19 +25,17 @@ namespace Sender
       }
 
       var records = ReadCsv(csvPath);
-
-      var record = records.First();
-      var json = record.ToJson();
-
-
       using (var client = new RequestSocket())
       {
         client.Connect("tcp://localhost:5555");
-        client.SendFrame(json);
 
-
-        var message = client.ReceiveFrameString();
-        //Console.WriteLine("Received {0}", message);
+        foreach (var person in records)
+        {
+          var json = person.ToJson();
+          client.SendFrame(json, false);
+          var message = client.ReceiveFrameString();
+          Console.WriteLine($"Receiver responded with: {message}");
+        }
       }
 
       Console.WriteLine("Press any key to quit.");
